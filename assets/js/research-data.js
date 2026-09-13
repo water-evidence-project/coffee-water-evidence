@@ -1,6 +1,6 @@
 window.RESEARCH_DATA = Object.freeze({
   meta: {
-    version: '0.9.0',
+    version: '1.1.0',
     studyYear: 2026,
     studyArea: 'Đắk Lắk',
     sample: { cost: 217, wtp: 217, land: 218 },
@@ -92,7 +92,7 @@ window.RESEARCH_DATA = Object.freeze({
   },
   integrated: [
     { key: 'cost', label: 'Chi phí tưới', beta: 0.08787422647787113, p: 0.154, direction: 'positive', status: 'Chưa có tín hiệu độc lập rõ', note: 'Tổng chi phí tưới hộ khai báo' },
-    { key: 'wtp', label: 'WTP chương trình', beta: -0.10122620184553967, p: 0.504, direction: 'negative', status: 'Chưa có tín hiệu độc lập rõ', note: 'Giá trị/ủng hộ được phát biểu cho chương trình cụ thể' },
+    { key: 'wtp', label: 'Sẵn lòng chi trả', beta: -0.10122620184553967, p: 0.504, direction: 'negative', status: 'Chưa có tín hiệu độc lập rõ', note: 'Giá trị/ủng hộ được phát biểu cho chương trình cụ thể' },
     { key: 'land', label: 'Giá trị đất', beta: -0.24062669518717356, p: 0.0001, direction: 'negative', status: 'Tín hiệu âm rõ', note: 'Giá trị đất cà phê do hộ tự ước tính' }
   ]
 });

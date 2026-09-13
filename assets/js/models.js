@@ -40,7 +40,7 @@
   }
 
   function wtpScenario(households, bidAmount) {
-    const N = Math.max(1, Math.round(Number(households) || 1));
+    const N = clamp(Math.round(Number(households) || 1), 1, 100000);
     const bid = D.wtp.bids.find((x) => x.amount === Number(bidAmount)) || D.wtp.bids[0];
     const expectedParticipants = N * bid.rate;
     const annualFunds = expectedParticipants * bid.amount;

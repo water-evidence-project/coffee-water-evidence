@@ -31,6 +31,18 @@
       nav.classList.remove('open');
       toggle?.setAttribute('aria-expanded','false');
     }));
+    document.addEventListener('keydown', (event)=>{
+      if(event.key === 'Escape' && nav.classList.contains('open')){
+        nav.classList.remove('open');
+        toggle?.setAttribute('aria-expanded','false');
+        toggle?.focus();
+      }
+    });
+    $$('a[href="#top"]').forEach(link=>link.addEventListener('click',(event)=>{
+      event.preventDefault();
+      const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+      window.scrollTo({top:0,left:0,behavior:reduced?'auto':'smooth'});
+    }));
   }
 
   function setupCost(){
@@ -86,15 +98,24 @@
       btn.type='button';
       btn.className='bid-button';
       btn.dataset.amount=String(b.amount);
+      btn.setAttribute('aria-pressed','false');
       btn.innerHTML=`<strong>${new Intl.NumberFormat('vi-VN').format(b.amount)} đ</strong><small>Đồng ý: ${(b.rate*100).toFixed(1).replace('.',',')}%</small>`;
       btn.addEventListener('click',()=>{ active=b.amount; syncButtons(); update(); });
       holder.appendChild(btn);
     });
     function syncButtons(){
-      $$('.bid-button',holder).forEach(btn=>btn.classList.toggle('active',Number(btn.dataset.amount)===active));
+      $$('.bid-button',holder).forEach(btn=>{
+        const selected = Number(btn.dataset.amount)===active;
+        btn.classList.toggle('active',selected);
+        btn.setAttribute('aria-pressed',String(selected));
+      });
     }
     function update(){
-      const r=M.wtpScenario($('#wtp-households').value,active);
+      const householdsInput=$('#wtp-households');
+      const requested=Math.round(Number(householdsInput.value)||1);
+      const safe=M.clamp(requested,1,100000);
+      if(householdsInput.value==='' || requested!==safe) householdsInput.value=String(safe);
+      const r=M.wtpScenario(safe,active);
       $('#wtp-rate').textContent=`${(r.rate*100).toFixed(1).replace('.',',')}%`;
       $('#wtp-participants').textContent=`≈ ${new Intl.NumberFormat('vi-VN',{maximumFractionDigits:1}).format(r.expectedParticipants)} hộ`;
       $('#wtp-funds').textContent=fmtVND(r.annualFunds);
@@ -119,7 +140,7 @@
   }
 
   function setupLand(){
-    populateScale($('#land-from'),D.labels.shortage,1);
+    populateScale($('#land-from'),D.labels.shortage,2);
     populateScale($('#land-to'),D.labels.shortage,3);
     function update(){
       const r=M.landShortageComparison($('#land-from').value,$('#land-to').value);
@@ -128,8 +149,8 @@
       el.classList.toggle('negative',r.relativePct<0);
       el.classList.toggle('positive',r.relativePct>0);
       const direction=r.delta===0?'không thay đổi mức thiếu nước':`${Math.abs(r.delta)} bậc ${r.delta>0?'cao hơn':'thấp hơn'}`;
-      const multiStep = Math.abs(r.delta)>1 ? ' So sánh nhiều bậc đồng nghĩa với việc lũy tích giả định tuyến tính của biến shortage trong specification hiện tại.' : '';
-      $('#land-context').textContent=`So sánh từ mức ${r.from} (${D.labels.shortage[r.from].toLowerCase()}) sang mức ${r.to} (${D.labels.shortage[r.to].toLowerCase()}): ${direction}. Đây là liên hệ tương đối suy ra từ hệ số shortage của mô hình, không phải tác động nhân quả.${multiStep}`;
+      const multiStep = Math.abs(r.delta)>1 ? ' So sánh nhiều bậc đồng nghĩa với việc lũy tích giả định tuyến tính của biến mức thiếu nước trong đặc tả hiện tại.' : '';
+      $('#land-context').textContent=`So sánh từ mức ${r.from} (${D.labels.shortage[r.from].toLowerCase()}) sang mức ${r.to} (${D.labels.shortage[r.to].toLowerCase()}): ${direction}. Đây là liên hệ tương đối suy ra từ hệ số mức thiếu nước của mô hình, không phải tác động nhân quả.${multiStep}`;
     }
     $('#land-from').addEventListener('input',update);
     $('#land-to').addEventListener('input',update);
